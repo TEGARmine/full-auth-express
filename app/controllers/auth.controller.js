@@ -48,11 +48,17 @@ const verificationToken = generateVerificationToken();
 let emailUser = '';
 
 exports.signup = async (req, res) => {
+  const { nohp, email, password } = req.body;
+
+  if (!nohp || !email) {
+    return res.status(400).send({ message: "No HP dan Email harus diisi." });
+  }
+
   try {
     const user = await User.create({
-      nohp: req.body.nohp,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 8)
+      nohp: nohp,
+      email: email,
+      password: bcrypt.hashSync(password, 8)
     });
 
     if (user) {
@@ -102,10 +108,16 @@ const generateRefreshToken = (user) => {
 let refreshTokens = [];
 
 exports.signin = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).send({ message: "Email harus diisi." });
+  }
+
   try {
     const user = await User.findOne({
       where: {
-        email: req.body.email
+        email: email
       }
     });
 
